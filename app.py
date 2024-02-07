@@ -15,6 +15,11 @@ api_key = API_KEY
 secret_name = "TEST_KEY"
 secret_value = "ddd-secret-value"
 
+# Set up headers with authentication token
+headers = {
+    "Authorization": f"token {api_key}",
+    "Accept": "application/vnd.github.v3+json"
+}
 
 
 # Get the public key to obtain the key_id
@@ -36,11 +41,6 @@ payload_json = json.dumps(payload)
 # Generate the URL for creating a repository secret
 url = f"https://api.github.com/repos/{username}/{repository}/actions/secrets/{secret_name}"
 
-# Set up headers with authentication token
-headers = {
-    "Authorization": f"token {api_key}",
-    "Accept": "application/vnd.github.v3+json"
-}
 # Send the request to create the secret
 response = requests.put(url, headers=headers, data=payload_json)
 

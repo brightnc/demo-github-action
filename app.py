@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 API_KEY = os.getenv('API_KEY')
+print(API_KEY)
 
 # Replace these variables with your own values
 username = "brightnc"

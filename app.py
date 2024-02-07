@@ -10,7 +10,7 @@ API_KEY = os.getenv('API_KEY')
 
 # Replace these variables with your own values
 username = "brightnc"
-repository = "coffinity-backend"
+repository = "demo-github-action"
 api_key = API_KEY
 secret_name = "TEST_KEY"
 secret_value = "ddd-secret-value"

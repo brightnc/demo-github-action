@@ -1,6 +1,7 @@
+from base64 import b64encode
+from nacl import encoding, public
 import requests
 import json
-import base64
 import os
 from dotenv import load_dotenv
 
@@ -12,7 +13,7 @@ API_KEY = os.getenv('API_KEY')
 username = "brightnc"
 repository = "demo-github-action"
 api_key = API_KEY
-secret_name = "TEST_KEY"
+secret_name = "TEST_KEY2"
 secret_value = "ddd-secret-value"
 
 # Set up headers with authentication token
@@ -27,10 +28,22 @@ public_key_url = f"https://api.github.com/repos/{username}/{repository}/actions/
 public_key_response = requests.get(public_key_url, headers=headers)
 public_key_data = public_key_response.json()
 key_id = public_key_data["key_id"]
+print(public_key_data )
+
+
+def encrypt(public_key: str, secret_value: str) -> str:
+  """Encrypt a Unicode string using the public key."""
+  public_key = public.PublicKey(public_key.encode("utf-8"), encoding.Base64Encoder())
+  sealed_box = public.SealedBox(public_key)
+  encrypted = sealed_box.encrypt(secret_value.encode("utf-8"))
+  return b64encode(encrypted).decode("utf-8")
+
+encrypt2 = encrypt(public_key_data["key"], secret_value)
+
 
 # Create payload with the secret value and key_id
 payload = {
-    "encrypted_value": base64.b64encode(secret_value.encode()).decode(),
+    "encrypted_value": encrypt2,
     "key_id": key_id
 }
 

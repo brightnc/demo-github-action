@@ -15,28 +15,31 @@ def encrypt(public_key: str, secret_value: str) -> str:
   return b64encode(encrypted).decode("utf-8")
 
 def main():
-    # Replace these variables with your own values
     username = os.getenv('GITHUB_USERNAME')
     repository = os.getenv('GITHUB_REPOSITORY')
-    api_key = os.getenv('API_KEY')
+    api_key = os.getenv('GITHUB_API_KEY')
     secret_name = os.getenv('GITHUB_SECRET_NAME')
     secret_value = os.getenv('GITHUB_SECRET_VALUE')
 
-    # Set up headers with authentication token
     headers = {
         "Authorization": f"token {api_key}",
         "Accept": "application/vnd.github.v3+json"
     }
 
 
-    # Get the public key to obtain the key_id
+    # Get the public key to obtain the key_id and key use for encrypt value
     public_key_url = f"https://api.github.com/repos/{username}/{repository}/actions/secrets/public-key"
+
     public_key_response = requests.get(public_key_url, headers=headers)
+
     public_key_data = public_key_response.json()
-    key_id = public_key_data["key_id"]
+
     print(public_key_data )
 
-    encryptedValue = encrypt(public_key_data["key"], secret_value)
+    key_id = public_key_data["key_id"]
+    key_value = public_key_data["key"]
+
+    encryptedValue = encrypt(key_value, secret_value)
 
     # Create payload with the secret value and key_id
     payload = {
@@ -54,9 +57,10 @@ def main():
     # Send the request to create the secret
     response = requests.put(url, headers=headers, data=payload_json)
 
-    # Check the response status
     if response.status_code == 201:
         print(f"Secret '{secret_name}' created successfully.")
+    elif response.status_code == 204:
+        print(f"Secret '{secret_name}' updated successfully.")
     else:
         print(f"Failed to create secret. Status code: {response.status_code}, Response: {response.text}")
 
